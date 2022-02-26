@@ -109,7 +109,7 @@ describe('main', () => {
       verify(mockOutageService.getSiteInfo(siteId)).once();
     });
 
-    it('should retrieve site information for the given site name', async () => {
+    it('should retrieve site information for the given site id', async () => {
       // Arrange
       const siteId = 'kingfisher';
       when(mockOutageService.getSiteInfo(siteId)).thenResolve(mockSiteInfo);

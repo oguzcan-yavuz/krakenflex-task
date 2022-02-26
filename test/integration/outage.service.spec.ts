@@ -9,7 +9,7 @@ describe('Outage Service', () => {
   let mockOutages: Outage[];
   let mockSiteInfo: SiteInfo;
 
-  beforeAll(() => {
+  beforeEach(() => {
     outageService = new OutageService();
     scope = nock(OUTAGE_API_BASE_URL);
     mockOutages = [
@@ -61,33 +61,79 @@ describe('Outage Service', () => {
     };
   });
 
+  afterEach(() => {
+    const pendingMocks = nock.pendingMocks();
+    if (pendingMocks.length) {
+      const msg = `Some nock mocks are not used: ${pendingMocks}`;
+      console.error(msg);
+    }
+    nock.cleanAll();
+  });
+
   // TODO: handle 500 responses
   describe('getOutages()', () => {
     it('should get all outages', async () => {
       // Arrange
-      scope.get('/outages').reply(200, mockOutages);
+      const url = '/outages';
+      scope.get(url).reply(200, mockOutages);
 
       // Act
       const outages = await outageService.listOutages();
 
       // Assert
       expect(outages).toEqual(mockOutages);
-      scope.isDone();
+      expect(scope.isDone()).toBe(true);
     });
   });
 
   describe('getSiteInfo()', () => {
-    it('should get the site info for given name', async () => {
+    it('should get the site info for given site id', async () => {
       // Arrange
       const siteId = 'kingfisher';
-      scope.get(`/site-info/${siteId}`).reply(200, mockSiteInfo);
+      const url = `/site-info/${siteId}`;
+      scope.get(url).reply(200, mockSiteInfo);
 
       // Act
       const siteInfo = await outageService.getSiteInfo(siteId);
 
       // Assert
       expect(siteInfo).toEqual(mockSiteInfo);
-      scope.isDone();
+      expect(scope.isDone()).toBe(true);
+    });
+  });
+
+  describe('createSiteOutages()', () => {
+    it('should create the outages for the given site id', async () => {
+      // Arrange
+      const siteId = 'kingfisher';
+      const mockOutagesWithDeviceNames = [
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+          begin: '2022-05-23T12:21:27.377Z',
+          end: '2022-11-13T02:16:38.905Z',
+        },
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+          begin: '2022-12-04T09:59:33.628Z',
+          end: '2022-12-12T22:35:13.815Z',
+        },
+        {
+          id: '086b0d53-b311-4441-aaf3-935646f03d4d',
+          name: 'Battery 2',
+          begin: '2022-07-12T16:31:47.254Z',
+          end: '2022-10-13T04:05:10.044Z',
+        },
+      ];
+      const url = `/site-outages/${siteId}`;
+      scope.post(url, mockOutagesWithDeviceNames).reply(200);
+
+      // Act
+      await outageService.createSiteOutages(siteId, mockOutagesWithDeviceNames);
+
+      // Assert
+      expect(scope.isDone()).toBe(true);
     });
   });
 });

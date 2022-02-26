@@ -30,6 +30,7 @@ export class OutageService {
     siteId: string,
     outages: OutageWithDeviceNames[],
   ): Promise<void> {
-    return;
+    const url = `/site-outages/${siteId}`;
+    await this.httpClient.post(url, outages);
   }
 }
