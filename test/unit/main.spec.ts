@@ -70,6 +70,17 @@ describe('main', () => {
   });
 
   describe('getOutages()', () => {
+    it('should throw not found if there are no outages', async () => {
+      // Arrange
+      when(mockOutageService.list()).thenResolve(undefined);
+
+      // Act
+      const fn = () => main.getOutages();
+
+      // Assert
+      await expect(fn).rejects.toThrow(NotFoundError);
+    });
+
     it('should get the list of outages', async () => {
       // Arrange
       when(mockOutageService.list()).thenResolve(mockOutages);
@@ -83,7 +94,7 @@ describe('main', () => {
   });
 
   describe('getSiteInfo()', () => {
-    it('should return empty if there is no information available for the given site', async () => {
+    it('should throw not found if there is no information available for the given site', async () => {
       // Arrange
       const site = 'empty-site';
       when(mockOutageService.getSiteInfo(site)).thenResolve(undefined);

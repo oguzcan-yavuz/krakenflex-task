@@ -2,10 +2,10 @@ import { Device, Outage, OutageWithDeviceNames, SiteInfo } from './types';
 import { OutageService } from './outage.service';
 import { NotFoundError } from './errors/not-found-error';
 
-interface FilterOutageOptions {
+type FilterOutageOptions = {
   after?: Date;
   deviceIds?: string[];
-}
+};
 
 export class Main {
   constructor(private readonly outageService: OutageService) {}
@@ -49,6 +49,10 @@ export class Main {
 
   async getOutages(): Promise<Outage[]> {
     const outages = await this.outageService.list();
+
+    if (outages === undefined || outages.length === 0) {
+      throw new NotFoundError();
+    }
 
     return outages;
   }
