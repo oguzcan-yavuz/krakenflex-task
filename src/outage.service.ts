@@ -13,13 +13,17 @@ export class OutageService {
   }
 
   async listOutages(): Promise<Outage[] | undefined> {
-    const { data: outages } = await this.httpClient.get('/outages');
+    const url = '/outages';
+    const { data: outages } = await this.httpClient.get<Outage[]>(url);
 
     return outages;
   }
 
   async getSiteInfo(siteId: string): Promise<SiteInfo | undefined> {
-    return;
+    const url = `/site-info/${siteId}`;
+    const { data: siteInfo } = await this.httpClient.get<SiteInfo>(url);
+
+    return siteInfo;
   }
 
   async createSiteOutages(
