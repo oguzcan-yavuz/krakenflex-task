@@ -1,4 +1,4 @@
-import { Outage, OutageWithDeviceNames, SiteInfo } from './types';
+import { Outage, OutageWithDeviceName, SiteInfo } from './types';
 import axios, { AxiosInstance } from 'axios';
 import { OUTAGE_API_BASE_URL } from './constants';
 
@@ -7,7 +7,7 @@ export class OutageService {
   constructor(apiKey: string) {
     this.httpClient = axios.create({
       baseURL: OUTAGE_API_BASE_URL,
-      timeout: 1000,
+      timeout: 5000,
       headers: { 'x-api-key': apiKey },
     });
   }
@@ -28,7 +28,7 @@ export class OutageService {
 
   async createSiteOutages(
     siteId: string,
-    outages: OutageWithDeviceNames[],
+    outages: OutageWithDeviceName[],
   ): Promise<void> {
     const url = `/site-outages/${siteId}`;
     await this.httpClient.post(url, outages);

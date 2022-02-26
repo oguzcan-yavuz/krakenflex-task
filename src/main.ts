@@ -1,4 +1,4 @@
-import { Device, Outage, OutageWithDeviceNames, SiteInfo } from './types';
+import { Device, Outage, OutageWithDeviceName, SiteInfo } from './types';
 import { OutageService } from './outage.service';
 import { NotFoundError } from './errors/not-found-error';
 
@@ -13,7 +13,7 @@ export class Main {
   attachDeviceNameToOutages(
     devices: Device[],
     outages: Outage[],
-  ): OutageWithDeviceNames[] {
+  ): OutageWithDeviceName[] {
     const deviceIdToName = devices.reduce((map, device) => {
       map.set(device.id, device.name);
       return map;
@@ -79,7 +79,6 @@ export class Main {
       siteInfo.devices,
       filteredOutages,
     );
-
     await this.outageService.createSiteOutages(siteId, outagesWithDeviceNames);
   }
 }

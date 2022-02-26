@@ -15,4 +15,4 @@ export type SiteInfo = {
   devices: Device[];
 };
 
-export type OutageWithDeviceNames = Outage & Pick<Device, 'name'>;
+export type OutageWithDeviceName = Outage & Pick<Device, 'name'>;
