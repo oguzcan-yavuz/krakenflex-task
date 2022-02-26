@@ -1,16 +1,18 @@
 import { Main } from '../../src/main';
-import { Outage } from '../../src/types';
-import { mock } from 'ts-mockito';
+import { Outage, SiteInfo } from '../../src/types';
+import { instance, mock, reset, when } from 'ts-mockito';
 import { OutageService } from '../../src/outage.service';
+import { NotFoundError } from '../../src/errors/not-found-error';
 
 describe('main', () => {
   let main: Main;
+  let mockOutageService: OutageService;
   let mockOutages: Outage[];
-  let outageService: OutageService;
+  let mockSiteInfo: SiteInfo;
 
   beforeAll(() => {
-    outageService = mock(OutageService);
-    main = new Main(outageService);
+    mockOutageService = mock(OutageService);
+    main = new Main(instance(mockOutageService));
   });
 
   beforeEach(() => {
@@ -46,22 +48,63 @@ describe('main', () => {
         end: '2022-10-13T04:05:10.044Z',
       },
     ];
+
+    mockSiteInfo = {
+      id: 'kingfisher',
+      name: 'KingFisher',
+      devices: [
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+        },
+        {
+          id: '086b0d53-b311-4441-aaf3-935646f03d4d',
+          name: 'Battery 2',
+        },
+      ],
+    };
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    reset(mockOutageService);
   });
 
   describe('getOutages()', () => {
     it('should get the list of outages', async () => {
       // Arrange
-      jest.spyOn(outageService, 'list').mockResolvedValue(mockOutages);
+      when(mockOutageService.list()).thenResolve(mockOutages);
 
       // Act
       const outages = await main.getOutages();
 
       // Assert
       expect(outages).toEqual(mockOutages);
+    });
+  });
+
+  describe('getSiteInfo()', () => {
+    it('should return empty if there is no information available for the given site', async () => {
+      // Arrange
+      const site = 'empty-site';
+      when(mockOutageService.getSiteInfo(site)).thenResolve(undefined);
+
+      // Act
+      const fn = () => main.getSiteInfo(site);
+
+      // Assert
+      await expect(fn).rejects.toThrow(NotFoundError);
+    });
+
+    it('should retrieve site information for the given site name', async () => {
+      // Arrange
+      const site = 'kingfisher';
+      when(mockOutageService.getSiteInfo(site)).thenResolve(mockSiteInfo);
+
+      // Act
+      const siteInfo = await main.getSiteInfo(site);
+
+      // Assert
+      expect(siteInfo).toEqual(mockSiteInfo);
     });
   });
 });
