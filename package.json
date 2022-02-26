@@ -12,6 +12,7 @@
     "eslint-plugin-jest": "~25.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "~27.4.4",
+    "nock": "^13.2.4",
     "prettier": "~2.5.1",
     "rimraf": "~3.0.2",
     "ts-jest": "~27.1.1",
@@ -30,5 +31,8 @@
     "test:watch": "jest --watch"
   },
   "author": "Oğuzcan Yavuz <oguzcanyavuz321@gmail.com>",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "axios": "^0.26.0"
+  }
 }
