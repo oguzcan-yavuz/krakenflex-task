@@ -10,8 +10,9 @@ describe('Outage Service', () => {
   let mockSiteInfo: SiteInfo;
 
   beforeEach(() => {
-    outageService = new OutageService();
-    scope = nock(OUTAGE_API_BASE_URL);
+    const apiKey = 'test';
+    outageService = new OutageService(apiKey);
+    scope = nock(OUTAGE_API_BASE_URL, { reqheaders: { 'x-api-key': apiKey } });
     mockOutages = [
       {
         id: '002b28fc-283c-47ec-9af2-ea287336dc1b',

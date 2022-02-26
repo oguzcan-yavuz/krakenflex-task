@@ -4,11 +4,11 @@ import { OUTAGE_API_BASE_URL } from './constants';
 
 export class OutageService {
   private httpClient: AxiosInstance;
-  constructor() {
+  constructor(apiKey: string) {
     this.httpClient = axios.create({
       baseURL: OUTAGE_API_BASE_URL,
       timeout: 1000,
-      // headers: {'X-Custom-Header': 'foobar'} // TODO: add the api-key here
+      headers: { 'x-api-key': apiKey },
     });
   }
 
