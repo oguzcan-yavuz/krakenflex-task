@@ -1,6 +1,6 @@
 import { Main } from '../../src/main';
 import { Outage, SiteInfo } from '../../src/types';
-import { instance, mock, reset, when } from 'ts-mockito';
+import { instance, mock, reset, when, verify, deepEqual } from 'ts-mockito';
 import { OutageService } from '../../src/outage.service';
 import { NotFoundError } from '../../src/errors/not-found-error';
 
@@ -79,6 +79,7 @@ describe('main', () => {
 
       // Assert
       await expect(fn).rejects.toThrow(NotFoundError);
+      verify(mockOutageService.list()).once();
     });
 
     it('should get the list of outages', async () => {
@@ -90,32 +91,35 @@ describe('main', () => {
 
       // Assert
       expect(outages).toEqual(mockOutages);
+      verify(mockOutageService.list()).once();
     });
   });
 
   describe('getSiteInfo()', () => {
     it('should throw not found if there is no information available for the given site', async () => {
       // Arrange
-      const site = 'empty-site';
-      when(mockOutageService.getSiteInfo(site)).thenResolve(undefined);
+      const siteName = 'empty-site';
+      when(mockOutageService.getSiteInfo(siteName)).thenResolve(undefined);
 
       // Act
-      const fn = () => main.getSiteInfo(site);
+      const fn = () => main.getSiteInfo(siteName);
 
       // Assert
       await expect(fn).rejects.toThrow(NotFoundError);
+      verify(mockOutageService.getSiteInfo(siteName)).once();
     });
 
     it('should retrieve site information for the given site name', async () => {
       // Arrange
-      const site = 'kingfisher';
-      when(mockOutageService.getSiteInfo(site)).thenResolve(mockSiteInfo);
+      const siteName = 'kingfisher';
+      when(mockOutageService.getSiteInfo(siteName)).thenResolve(mockSiteInfo);
 
       // Act
-      const siteInfo = await main.getSiteInfo(site);
+      const siteInfo = await main.getSiteInfo(siteName);
 
       // Assert
       expect(siteInfo).toEqual(mockSiteInfo);
+      verify(mockOutageService.getSiteInfo(siteName)).once();
     });
   });
 
@@ -196,7 +200,7 @@ describe('main', () => {
         '002b28fc-283c-47ec-9af2-ea287336dc1b',
         '086b0d53-b311-4441-aaf3-935646f03d4d',
       ];
-      const outagesAfterGivenDateAndWithDeviceId = [
+      const outagesAfterGivenDateAndWithDeviceIds = [
         {
           id: '086b0d53-b311-4441-aaf3-935646f03d4d',
           begin: '2022-07-12T16:31:47.254Z',
@@ -219,7 +223,7 @@ describe('main', () => {
 
       // Assert
       expect(outages).toEqual(
-        expect.arrayContaining(outagesAfterGivenDateAndWithDeviceId),
+        expect.arrayContaining(outagesAfterGivenDateAndWithDeviceIds),
       );
     });
   });
@@ -282,7 +286,53 @@ describe('main', () => {
       );
 
       // Assert
-      expect(outagesWithDeviceNames).toEqual(expectedOutagesWithDeviceNames);
+      expect(outagesWithDeviceNames).toEqual(
+        expect.arrayContaining(expectedOutagesWithDeviceNames),
+      );
+    });
+  });
+
+  describe('run()', () => {
+    it('should compose all functions correctly', async () => {
+      // Arrange
+      const siteName = 'kingfisher';
+      const after = new Date('2022-01-01T00:00:00.000Z');
+      when(mockOutageService.list()).thenResolve(mockOutages);
+      when(mockOutageService.getSiteInfo(siteName)).thenResolve(mockSiteInfo);
+      const filterSpy = jest.spyOn(main, 'filterOutages');
+      const attachNamesSpy = jest.spyOn(main, 'attachDeviceNameToOutages');
+      const siteOutages = [
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+          begin: '2022-05-23T12:21:27.377Z',
+          end: '2022-11-13T02:16:38.905Z',
+        },
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+          begin: '2022-12-04T09:59:33.628Z',
+          end: '2022-12-12T22:35:13.815Z',
+        },
+        {
+          id: '086b0d53-b311-4441-aaf3-935646f03d4d',
+          name: 'Battery 2',
+          begin: '2022-07-12T16:31:47.254Z',
+          end: '2022-10-13T04:05:10.044Z',
+        },
+      ];
+
+      // Act
+      await main.run(siteName, after);
+
+      // Assert
+      verify(mockOutageService.list()).once();
+      verify(mockOutageService.getSiteInfo(siteName)).once();
+      expect(filterSpy).toHaveBeenCalled();
+      expect(attachNamesSpy).toHaveBeenCalled();
+      verify(
+        mockOutageService.createSiteOutages(siteName, deepEqual(siteOutages)),
+      ).once();
     });
   });
 });

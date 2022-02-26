@@ -57,13 +57,32 @@ export class Main {
     return outages;
   }
 
-  async getSiteInfo(name: string): Promise<SiteInfo> {
-    const siteInfo = await this.outageService.getSiteInfo(name);
+  async getSiteInfo(siteName: string): Promise<SiteInfo> {
+    const siteInfo = await this.outageService.getSiteInfo(siteName);
 
     if (siteInfo === undefined) {
       throw new NotFoundError();
     }
 
     return siteInfo;
+  }
+
+  async run(siteName: string, after: Date): Promise<void> {
+    const [outages, siteInfo] = await Promise.all([
+      this.getOutages(),
+      this.getSiteInfo(siteName),
+    ]);
+    const deviceIds = siteInfo.devices.map((device) => device.id);
+    const filterOptions = { after, deviceIds };
+    const filteredOutages = this.filterOutages(filterOptions, outages);
+    const outagesWithDeviceNames = this.attachDeviceNameToOutages(
+      siteInfo.devices,
+      filteredOutages,
+    );
+
+    await this.outageService.createSiteOutages(
+      siteName,
+      outagesWithDeviceNames,
+    );
   }
 }
