@@ -72,26 +72,26 @@ describe('main', () => {
   describe('getOutages()', () => {
     it('should throw not found if there are no outages', async () => {
       // Arrange
-      when(mockOutageService.list()).thenResolve(undefined);
+      when(mockOutageService.listOutages()).thenResolve(undefined);
 
       // Act
       const fn = () => main.getOutages();
 
       // Assert
       await expect(fn).rejects.toThrow(NotFoundError);
-      verify(mockOutageService.list()).once();
+      verify(mockOutageService.listOutages()).once();
     });
 
     it('should get the list of outages', async () => {
       // Arrange
-      when(mockOutageService.list()).thenResolve(mockOutages);
+      when(mockOutageService.listOutages()).thenResolve(mockOutages);
 
       // Act
       const outages = await main.getOutages();
 
       // Assert
       expect(outages).toEqual(mockOutages);
-      verify(mockOutageService.list()).once();
+      verify(mockOutageService.listOutages()).once();
     });
   });
 
@@ -297,7 +297,7 @@ describe('main', () => {
       // Arrange
       const siteId = 'kingfisher';
       const after = new Date('2022-01-01T00:00:00.000Z');
-      when(mockOutageService.list()).thenResolve(mockOutages);
+      when(mockOutageService.listOutages()).thenResolve(mockOutages);
       when(mockOutageService.getSiteInfo(siteId)).thenResolve(mockSiteInfo);
       const filterSpy = jest.spyOn(main, 'filterOutages');
       const attachNamesSpy = jest.spyOn(main, 'attachDeviceNameToOutages');
@@ -326,7 +326,7 @@ describe('main', () => {
       await main.run(siteId, after);
 
       // Assert
-      verify(mockOutageService.list()).once();
+      verify(mockOutageService.listOutages()).once();
       verify(mockOutageService.getSiteInfo(siteId)).once();
       expect(filterSpy).toHaveBeenCalled();
       expect(attachNamesSpy).toHaveBeenCalled();

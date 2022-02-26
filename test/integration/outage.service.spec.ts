@@ -68,7 +68,7 @@ describe('Outage Service', () => {
       scope.get('/outages').reply(200, mockOutages);
 
       // Act
-      const outages = await outageService.list();
+      const outages = await outageService.listOutages();
 
       // Assert
       expect(outages).toEqual(mockOutages);

@@ -12,7 +12,7 @@ export class OutageService {
     });
   }
 
-  async list(): Promise<Outage[] | undefined> {
+  async listOutages(): Promise<Outage[] | undefined> {
     const { data: outages } = await this.httpClient.get('/outages');
 
     return outages;

@@ -48,7 +48,7 @@ export class Main {
   }
 
   async getOutages(): Promise<Outage[]> {
-    const outages = await this.outageService.list();
+    const outages = await this.outageService.listOutages();
 
     if (outages === undefined || outages.length === 0) {
       throw new NotFoundError();
