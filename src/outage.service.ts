@@ -18,12 +18,12 @@ export class OutageService {
     return outages;
   }
 
-  async getSiteInfo(siteName: string): Promise<SiteInfo | undefined> {
+  async getSiteInfo(siteId: string): Promise<SiteInfo | undefined> {
     return;
   }
 
   async createSiteOutages(
-    siteName: string,
+    siteId: string,
     outages: OutageWithDeviceNames[],
   ): Promise<void> {
     return;

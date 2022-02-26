@@ -57,8 +57,8 @@ export class Main {
     return outages;
   }
 
-  async getSiteInfo(siteName: string): Promise<SiteInfo> {
-    const siteInfo = await this.outageService.getSiteInfo(siteName);
+  async getSiteInfo(siteId: string): Promise<SiteInfo> {
+    const siteInfo = await this.outageService.getSiteInfo(siteId);
 
     if (siteInfo === undefined) {
       throw new NotFoundError();
@@ -67,10 +67,10 @@ export class Main {
     return siteInfo;
   }
 
-  async run(siteName: string, after: Date): Promise<void> {
+  async run(siteId: string, after: Date): Promise<void> {
     const [outages, siteInfo] = await Promise.all([
       this.getOutages(),
-      this.getSiteInfo(siteName),
+      this.getSiteInfo(siteId),
     ]);
     const deviceIds = siteInfo.devices.map((device) => device.id);
     const filterOptions = { after, deviceIds };
@@ -80,9 +80,6 @@ export class Main {
       filteredOutages,
     );
 
-    await this.outageService.createSiteOutages(
-      siteName,
-      outagesWithDeviceNames,
-    );
+    await this.outageService.createSiteOutages(siteId, outagesWithDeviceNames);
   }
 }

@@ -98,28 +98,28 @@ describe('main', () => {
   describe('getSiteInfo()', () => {
     it('should throw not found if there is no information available for the given site', async () => {
       // Arrange
-      const siteName = 'empty-site';
-      when(mockOutageService.getSiteInfo(siteName)).thenResolve(undefined);
+      const siteId = 'empty-site';
+      when(mockOutageService.getSiteInfo(siteId)).thenResolve(undefined);
 
       // Act
-      const fn = () => main.getSiteInfo(siteName);
+      const fn = () => main.getSiteInfo(siteId);
 
       // Assert
       await expect(fn).rejects.toThrow(NotFoundError);
-      verify(mockOutageService.getSiteInfo(siteName)).once();
+      verify(mockOutageService.getSiteInfo(siteId)).once();
     });
 
     it('should retrieve site information for the given site name', async () => {
       // Arrange
-      const siteName = 'kingfisher';
-      when(mockOutageService.getSiteInfo(siteName)).thenResolve(mockSiteInfo);
+      const siteId = 'kingfisher';
+      when(mockOutageService.getSiteInfo(siteId)).thenResolve(mockSiteInfo);
 
       // Act
-      const siteInfo = await main.getSiteInfo(siteName);
+      const siteInfo = await main.getSiteInfo(siteId);
 
       // Assert
       expect(siteInfo).toEqual(mockSiteInfo);
-      verify(mockOutageService.getSiteInfo(siteName)).once();
+      verify(mockOutageService.getSiteInfo(siteId)).once();
     });
   });
 
@@ -295,10 +295,10 @@ describe('main', () => {
   describe('run()', () => {
     it('should compose all functions correctly', async () => {
       // Arrange
-      const siteName = 'kingfisher';
+      const siteId = 'kingfisher';
       const after = new Date('2022-01-01T00:00:00.000Z');
       when(mockOutageService.list()).thenResolve(mockOutages);
-      when(mockOutageService.getSiteInfo(siteName)).thenResolve(mockSiteInfo);
+      when(mockOutageService.getSiteInfo(siteId)).thenResolve(mockSiteInfo);
       const filterSpy = jest.spyOn(main, 'filterOutages');
       const attachNamesSpy = jest.spyOn(main, 'attachDeviceNameToOutages');
       const siteOutages = [
@@ -323,15 +323,15 @@ describe('main', () => {
       ];
 
       // Act
-      await main.run(siteName, after);
+      await main.run(siteId, after);
 
       // Assert
       verify(mockOutageService.list()).once();
-      verify(mockOutageService.getSiteInfo(siteName)).once();
+      verify(mockOutageService.getSiteInfo(siteId)).once();
       expect(filterSpy).toHaveBeenCalled();
       expect(attachNamesSpy).toHaveBeenCalled();
       verify(
-        mockOutageService.createSiteOutages(siteName, deepEqual(siteOutages)),
+        mockOutageService.createSiteOutages(siteId, deepEqual(siteOutages)),
       ).once();
     });
   });

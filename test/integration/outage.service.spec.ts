@@ -1,12 +1,13 @@
 import * as nock from 'nock';
 import { OUTAGE_API_BASE_URL } from '../../src/constants';
-import { Outage } from '../../src/types';
+import { Outage, SiteInfo } from '../../src/types';
 import { OutageService } from '../../src/outage.service';
 
 describe('Outage Service', () => {
   let outageService: OutageService;
   let scope;
   let mockOutages: Outage[];
+  let mockSiteInfo: SiteInfo;
 
   beforeAll(() => {
     outageService = new OutageService();
@@ -43,8 +44,24 @@ describe('Outage Service', () => {
         end: '2022-10-13T04:05:10.044Z',
       },
     ];
+
+    mockSiteInfo = {
+      id: 'kingfisher',
+      name: 'KingFisher',
+      devices: [
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+        },
+        {
+          id: '086b0d53-b311-4441-aaf3-935646f03d4d',
+          name: 'Battery 2',
+        },
+      ],
+    };
   });
 
+  // TODO: handle 500 responses
   describe('getOutages()', () => {
     it('should get all outages', async () => {
       // Arrange
@@ -55,6 +72,21 @@ describe('Outage Service', () => {
 
       // Assert
       expect(outages).toEqual(mockOutages);
+      scope.isDone();
+    });
+  });
+
+  describe('getSiteInfo()', () => {
+    it('should get the site info for given name', async () => {
+      // Arrange
+      const siteId = 'kingfisher';
+      scope.get(`/site-info/${siteId}`).reply(200, mockSiteInfo);
+
+      // Act
+      const siteInfo = await outageService.getSiteInfo(siteId);
+
+      // Assert
+      expect(siteInfo).toEqual(mockSiteInfo);
       scope.isDone();
     });
   });
