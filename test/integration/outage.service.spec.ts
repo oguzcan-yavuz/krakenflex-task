@@ -71,8 +71,40 @@ describe('Outage Service', () => {
     nock.cleanAll();
   });
 
-  // TODO: handle 500 responses
   describe('getOutages()', () => {
+    it('should retry if 500 received', async () => {
+      // Arrange
+      const url = '/outages';
+      scope.get(url).reply(500).get(url).reply(200);
+
+      // Act
+      await outageService.listOutages();
+
+      // Assert
+      expect(scope.isDone()).toBe(true);
+    });
+
+    // this test should fail since it returns 500 4 times
+    it('should retry thrice if 500 received', async () => {
+      // Arrange
+      const url = '/outages';
+      scope
+        .get(url)
+        .reply(500)
+        .get(url)
+        .reply(500)
+        .get(url)
+        .reply(500)
+        .get(url)
+        .reply(200);
+
+      // Act
+      await outageService.listOutages();
+
+      // Assert
+      expect(scope.isDone()).toBe(true);
+    });
+
     it('should get all outages', async () => {
       // Arrange
       const url = '/outages';
@@ -88,6 +120,40 @@ describe('Outage Service', () => {
   });
 
   describe('getSiteInfo()', () => {
+    it('should retry if 500 received', async () => {
+      // Arrange
+      const siteId = 'kingfisher';
+      const url = `/site-info/${siteId}`;
+      scope.get(url).reply(500).get(url).reply(200);
+
+      // Act
+      await outageService.getSiteInfo(siteId);
+
+      // Assert
+      expect(scope.isDone()).toBe(true);
+    });
+
+    // this test should fail since it returns 500 4 times
+    it('should retry thrice if 500 received', async () => {
+      // Arrange
+      const siteId = 'kingfisher';
+      const url = `/site-info/${siteId}`;
+      scope
+        .get(url)
+        .reply(500)
+        .get(url)
+        .reply(500)
+        .get(url)
+        .reply(500)
+        .get(url)
+        .reply(200);
+
+      // Act
+      await outageService.getSiteInfo(siteId);
+
+      // Assert
+      expect(scope.isDone()).toBe(true);
+    });
     it('should get the site info for given site id', async () => {
       // Arrange
       const siteId = 'kingfisher';

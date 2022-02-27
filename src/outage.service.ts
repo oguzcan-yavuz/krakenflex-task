@@ -1,15 +1,20 @@
 import { Outage, OutageWithDeviceName, SiteInfo } from './types';
 import axios, { AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
 import { OUTAGE_API_BASE_URL } from './constants';
 
 export class OutageService {
   private httpClient: AxiosInstance;
+
   constructor(apiKey: string) {
-    this.httpClient = axios.create({
+    const axiosInstance = axios.create({
       baseURL: OUTAGE_API_BASE_URL,
       timeout: 5000,
       headers: { 'x-api-key': apiKey },
     });
+    axiosRetry(axiosInstance, { retries: 3 });
+
+    this.httpClient = axiosInstance;
   }
 
   async listOutages(): Promise<Outage[] | undefined> {

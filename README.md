@@ -2,7 +2,7 @@
 
 ~~0- Complete a working example of the task. Refactor later on.~~
 
-1- Retry mechanism for the endpoints returning 500
+~~1- Retry mechanism for the endpoints returning 500~~
 
 ~~2- Integration testing with Nock~~
 
