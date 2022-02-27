@@ -1,0 +1,26 @@
+name: krakenflex-task
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - run: npm ci --no-audit
+
+    - run: npm run build
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Unit tests
+      run: npm run test
+
+    - name: Integration tests
+      run: npm run test:integration
