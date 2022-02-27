@@ -14,4 +14,8 @@
 
 6- Add docs for setting up the dev env and running the app (don't forget .nvmrc)
 
-7- e2e tests for CLI?
+~~7- e2e tests for CLI~~
+
+8- npm link issue
+
+9- Invoke integratin and e2e tests with separate scripts
