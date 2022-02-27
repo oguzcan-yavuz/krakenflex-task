@@ -28,6 +28,7 @@ export class Main {
     return outageWithDeviceNames;
   }
 
+  // TODO: remove filter options, get devices
   filterOutages(options: FilterOutageOptions, outages: Outage[]): Outage[] {
     const { after, deviceIds } = options;
     const deviceIdSet = new Set(deviceIds);
@@ -35,7 +36,7 @@ export class Main {
     const filteredOutages = outages.filter((outage) => {
       let condition = true;
       if (after) {
-        condition &&= new Date(outage.begin) > after;
+        condition &&= new Date(outage.begin) >= after;
       }
       if (deviceIds) {
         condition &&= deviceIdSet.has(outage.id);

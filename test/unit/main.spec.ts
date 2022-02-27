@@ -126,8 +126,19 @@ describe('main', () => {
   describe('filterOutages()', () => {
     it('should filter out the outages started before the given date', async () => {
       // Arrange
-      const after = new Date('2022-01-01T00:00:00.000Z');
+      const startDate = '2022-01-01T00:00:00.000Z';
+      const endDate = '2022-01-01T02:00:00.000Z';
+      // it should also include the given date
+      mockOutages[0].begin = startDate;
+      mockOutages[0].end = endDate;
+      const after = new Date(startDate);
       const outagesAfterGivenDate = [
+        // mutated outage
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          begin: startDate,
+          end: endDate,
+        },
         {
           id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
           begin: '2022-05-23T12:21:27.377Z',
