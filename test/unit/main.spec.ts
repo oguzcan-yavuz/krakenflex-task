@@ -168,11 +168,17 @@ describe('main', () => {
       expect(outages).toEqual(expect.arrayContaining(outagesAfterGivenDate));
     });
 
-    it('should filter out the outages without the given device ids', () => {
+    it('should filter out the outages that dont belong to given devices', () => {
       // Arrange
-      const deviceIds = [
-        '002b28fc-283c-47ec-9af2-ea287336dc1b',
-        '086b0d53-b311-4441-aaf3-935646f03d4d',
+      const devices = [
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+        },
+        {
+          id: '086b0d53-b311-4441-aaf3-935646f03d4d',
+          name: 'Battery 2',
+        },
       ];
       const outagesWithDeviceIds = [
         {
@@ -198,18 +204,24 @@ describe('main', () => {
       ];
 
       // Act
-      const outages = main.filterOutages({ deviceIds }, mockOutages);
+      const outages = main.filterOutages({ devices }, mockOutages);
 
       // Assert
       expect(outages).toEqual(expect.arrayContaining(outagesWithDeviceIds));
     });
 
-    it('should filter out both outages before given date and the outages without the given device ids', () => {
+    it('should filter out both outages before given date and the outages without the given devices', () => {
       // Arrange
       const after = new Date('2022-01-01T00:00:00.000Z');
-      const deviceIds = [
-        '002b28fc-283c-47ec-9af2-ea287336dc1b',
-        '086b0d53-b311-4441-aaf3-935646f03d4d',
+      const devices = [
+        {
+          id: '002b28fc-283c-47ec-9af2-ea287336dc1b',
+          name: 'Battery 1',
+        },
+        {
+          id: '086b0d53-b311-4441-aaf3-935646f03d4d',
+          name: 'Battery 2',
+        },
       ];
       const outagesAfterGivenDateAndWithDeviceIds = [
         {
@@ -230,7 +242,7 @@ describe('main', () => {
       ];
 
       // Act
-      const outages = main.filterOutages({ after, deviceIds }, mockOutages);
+      const outages = main.filterOutages({ after, devices }, mockOutages);
 
       // Assert
       expect(outages).toEqual(

@@ -4,7 +4,7 @@ import { NotFoundError } from './errors/not-found-error';
 
 type FilterOutageOptions = {
   after?: Date;
-  deviceIds?: string[];
+  devices?: Device[];
 };
 
 export class Main {
@@ -28,17 +28,16 @@ export class Main {
     return outageWithDeviceNames;
   }
 
-  // TODO: remove filter options, get devices
   filterOutages(options: FilterOutageOptions, outages: Outage[]): Outage[] {
-    const { after, deviceIds } = options;
-    const deviceIdSet = new Set(deviceIds);
+    const { after, devices = [] } = options;
+    const deviceIdSet = new Set(devices.map((device) => device.id));
 
     const filteredOutages = outages.filter((outage) => {
       let condition = true;
       if (after) {
         condition &&= new Date(outage.begin) >= after;
       }
-      if (deviceIds) {
+      if (devices.length > 0) {
         condition &&= deviceIdSet.has(outage.id);
       }
 
@@ -69,15 +68,14 @@ export class Main {
   }
 
   async run(siteId: string, after: Date): Promise<void> {
-    const [outages, siteInfo] = await Promise.all([
+    const [outages, { devices }] = await Promise.all([
       this.getOutages(),
       this.getSiteInfo(siteId),
     ]);
-    const deviceIds = siteInfo.devices.map((device) => device.id);
-    const filterOptions = { after, deviceIds };
+    const filterOptions = { after, devices };
     const filteredOutages = this.filterOutages(filterOptions, outages);
     const outagesWithDeviceNames = this.attachDeviceNameToOutages(
-      siteInfo.devices,
+      devices,
       filteredOutages,
     );
     await this.outageService.createSiteOutages(siteId, outagesWithDeviceNames);
