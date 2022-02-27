@@ -24,24 +24,23 @@ const parseDate = (value: string): Date => {
 (async () => {
   try {
     const program = new Command();
+    const defaultApiKey = process.env.OUTAGE_API_KEY;
+    const defaultSiteId = 'norwich-pear-tree';
+    const defaultDate = new Date('2022-01-01T00:00:00.000Z');
 
     program.name('create-outages').version('1.0.0');
     program
       .option(
         '-a, --api-key <key>',
         'api key for the outage service',
-        process.env.OUTAGE_API_KEY,
+        defaultApiKey,
       )
-      .option(
-        '-s, --site-id <siteId>',
-        'site id to add outages',
-        'norwich-pear-tree',
-      )
+      .option('-s, --site-id <siteId>', 'site id to add outages', defaultSiteId)
       .option<Date>(
         '-d, --date-after <date>',
         'starting date of the outages in ISO-8601 format',
         parseDate,
-        new Date('2022-01-01T00:00:00.000Z'),
+        defaultDate,
       );
 
     program.parse();
