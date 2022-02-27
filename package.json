@@ -24,7 +24,7 @@
     "start": "node dist/bin/index.js",
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
-    "build:watch": "tsc -w -p tsconfig.build.json",
+    "postbuild": "chmod +x dist/bin/index.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest",
@@ -44,6 +44,6 @@
     "validator": "^13.7.0"
   },
   "bin": {
-    "create-outages": "./dist/bin/index.js"
+    "create-outages": "dist/bin/index.js"
   }
 }
