@@ -18,4 +18,4 @@
 
 8- npm link issue
 
-9- Invoke integratin and e2e tests with separate scripts
+~~9- Invoke integration and e2e tests with separate scripts~~
