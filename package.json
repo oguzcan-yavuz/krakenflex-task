@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "node dist/bin/index.js",
-    "prebuild": "rimraf dist",
+    "prebuild": "npm run lint && rimraf dist",
     "build": "tsc -p tsconfig.build.json",
     "postbuild": "chmod +x dist/bin/index.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
