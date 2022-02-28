@@ -56,6 +56,7 @@ describe('create-outages CLI tool', () => {
 
   it('should return success message with default parameters', async () => {
     // Arrange
+    // 'Outages created successfully!'
     const successMessage = /success/i;
 
     // Act

@@ -33,15 +33,11 @@ export class Main {
     const deviceIdSet = new Set(devices.map((device) => device.id));
 
     const filteredOutages = outages.filter((outage) => {
-      let condition = true;
-      if (after) {
-        condition &&= new Date(outage.begin) >= after;
-      }
-      if (devices.length > 0) {
-        condition &&= deviceIdSet.has(outage.id);
-      }
+      const isAfter = after ? new Date(outage.begin) >= after : true;
+      const isOutageOfGivenDevices =
+        deviceIdSet.size > 0 ? deviceIdSet.has(outage.id) : true;
 
-      return condition;
+      return isAfter && isOutageOfGivenDevices;
     });
 
     return filteredOutages;
@@ -60,11 +56,11 @@ export class Main {
   async getSiteInfo(siteId: string): Promise<SiteInfo> {
     const siteInfo = await this.outageService.getSiteInfo(siteId);
 
-    if (siteInfo === undefined) {
+    if (siteInfo === undefined || Object.keys(siteInfo).length === 0) {
       throw new NotFoundError();
     }
 
-    return siteInfo;
+    return siteInfo as SiteInfo;
   }
 
   async run(siteId: string, after: Date): Promise<void> {

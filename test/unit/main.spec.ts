@@ -79,7 +79,17 @@ describe('main', () => {
 
       // Assert
       await expect(fn).rejects.toThrow(NotFoundError);
-      verify(mockOutageService.listOutages()).once();
+    });
+
+    it('should throw not found if outage service returns empty array', async () => {
+      // Arrange
+      when(mockOutageService.listOutages()).thenResolve([]);
+
+      // Act
+      const fn = () => main.getOutages();
+
+      // Assert
+      await expect(fn).rejects.toThrow(NotFoundError);
     });
 
     it('should get the list of outages', async () => {
@@ -96,7 +106,7 @@ describe('main', () => {
   });
 
   describe('getSiteInfo()', () => {
-    it('should throw not found if there is no information available for the given site', async () => {
+    it('should throw not found if outage service returns undefined', async () => {
       // Arrange
       const siteId = 'empty-site';
       when(mockOutageService.getSiteInfo(siteId)).thenResolve(undefined);
@@ -106,7 +116,18 @@ describe('main', () => {
 
       // Assert
       await expect(fn).rejects.toThrow(NotFoundError);
-      verify(mockOutageService.getSiteInfo(siteId)).once();
+    });
+
+    it('should throw not found if outage service returns empty object', async () => {
+      // Arrange
+      const siteId = 'empty-site';
+      when(mockOutageService.getSiteInfo(siteId)).thenResolve({});
+
+      // Act
+      const fn = () => main.getSiteInfo(siteId);
+
+      // Assert
+      await expect(fn).rejects.toThrow(NotFoundError);
     });
 
     it('should retrieve site information for the given site id', async () => {
@@ -351,8 +372,8 @@ describe('main', () => {
       // Assert
       verify(mockOutageService.listOutages()).once();
       verify(mockOutageService.getSiteInfo(siteId)).once();
-      expect(filterSpy).toHaveBeenCalled();
-      expect(attachNamesSpy).toHaveBeenCalled();
+      expect(filterSpy).toHaveBeenCalledTimes(1);
+      expect(attachNamesSpy).toHaveBeenCalledTimes(1);
       verify(
         mockOutageService.createSiteOutages(siteId, deepEqual(siteOutages)),
       ).once();

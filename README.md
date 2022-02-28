@@ -20,6 +20,8 @@
 
 ~~9- Invoke integration and e2e tests with separate scripts~~
 
+~~10- General refactoring~~
+
 ### Usage:
 
 ```nvm use```

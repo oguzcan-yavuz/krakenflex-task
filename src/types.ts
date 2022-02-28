@@ -16,3 +16,5 @@ export type SiteInfo = {
 };
 
 export type OutageWithDeviceName = Outage & Pick<Device, 'name'>;
+
+export type EmptyObject = Record<string, never>;

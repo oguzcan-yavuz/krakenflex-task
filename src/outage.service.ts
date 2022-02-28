@@ -1,4 +1,4 @@
-import { Outage, OutageWithDeviceName, SiteInfo } from './types';
+import { EmptyObject, Outage, OutageWithDeviceName, SiteInfo } from './types';
 import axios, { AxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry';
 import { OUTAGE_API_BASE_URL } from './constants';
@@ -24,9 +24,13 @@ export class OutageService {
     return outages;
   }
 
-  async getSiteInfo(siteId: string): Promise<SiteInfo | undefined> {
+  async getSiteInfo(
+    siteId: string,
+  ): Promise<SiteInfo | EmptyObject | undefined> {
     const url = `/site-info/${siteId}`;
-    const { data: siteInfo } = await this.httpClient.get<SiteInfo>(url);
+    const { data: siteInfo } = await this.httpClient.get<
+      SiteInfo | EmptyObject
+    >(url);
 
     return siteInfo;
   }

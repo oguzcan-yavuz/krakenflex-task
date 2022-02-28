@@ -84,7 +84,6 @@ describe('Outage Service', () => {
       expect(scope.isDone()).toBe(true);
     });
 
-    // this test should fail since it returns 500 4 times
     it('should retry thrice if 500 received', async () => {
       // Arrange
       const url = '/outages';
@@ -133,7 +132,6 @@ describe('Outage Service', () => {
       expect(scope.isDone()).toBe(true);
     });
 
-    // this test should fail since it returns 500 4 times
     it('should retry thrice if 500 received', async () => {
       // Arrange
       const siteId = 'kingfisher';
@@ -154,6 +152,7 @@ describe('Outage Service', () => {
       // Assert
       expect(scope.isDone()).toBe(true);
     });
+
     it('should get the site info for given site id', async () => {
       // Arrange
       const siteId = 'kingfisher';
